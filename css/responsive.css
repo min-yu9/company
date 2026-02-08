@@ -1,0 +1,32 @@
+/* 태블릿 이하 */
+@media (max-width: 768px) {
+
+.nav-menu {
+position: absolute;
+top: 70px;
+right: 0;
+width: 200px;
+background: white;
+flex-direction: column;
+padding: 20px;
+border-left: 1px solid #eee;
+display: none;
+}
+
+.nav-menu.active {
+display: flex;
+}
+
+.hamburger {
+display: block;
+}
+
+.hero-content h1 {
+font-size: 30px;
+}
+
+.hero-content p {
+font-size: 16px;
+}
+
+}
