@@ -1,56 +1,79 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Company_page</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company_page</title>
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="../css/responsive.css" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
    <!-- <link rel="stylesheet" href=""> -->
-</head>
+  </head>
 
-<body>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="logo"> kaizenF </div>
 
-  <!-- Header -->
-  <header>
-    <div class="logo"> kaizenF </div>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="#">회사소개</a></li>
+          <li><a href="#">연혁</a></li>
+          <li><a href="#">사업분야</a></li>
+          <li><a href="#">협력사</a></li>
+          <li><a href="#">문의</a></li>
+        </ul>
 
-    <nav>
-      <ul class="nav-menu">
-        <li><a href="#">회사소개</a></li>
-        <li><a href="#">연혁</a></li>
-        <li><a href="#">사업분야</a></li>
-        <li><a href="#">협력사</a></li>
-        <li><a href="#">문의</a></li>
-      </ul>
+        <!-- 모바일 햄버거 버튼 -->
+        <div class="hamburger" onclick="toggleMenu()">
+          ☰
+        </div>
+      </nav>
+    </header>
 
-      <!-- 모바일 햄버거 버튼 -->
-      <div class="hamburger" onclick="toggleMenu()">
-        ☰
+    <!-- Main Banner -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>안정적인 통신 인프라 구축 전문 기업</h1>
+        <p>신뢰와 기술력을 바탕으로 최상의 IT 솔루션을 제공합니다.</p>
       </div>
-    </nav>
-  </header>
 
-  <!-- Main Banner -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>안정적인 통신 인프라 구축 전문 기업</h1>
-      <p>신뢰와 기술력을 바탕으로 최상의 IT 솔루션을 제공합니다.</p>
-      <!-- <button>문의하기</button> -->
-    </div>
-  </section>
+      <!-- 스크롤 버튼 -->
+      <a href="#about" class="scroll-down"></a>
+    </section>
 
-  <script>
-    function toggleMenu() {
-      const menu = document.querySelector('.nav-menu');
-      menu.classList.toggle('active');
-    }
-  </script>
+    <!-- 회사 소개 -->
+    <section class="hero">
+  <div class="hero-content">
+    <h1>안정적인 통신 인프라 구축 전문 기업</h1>
+    <p>신뢰와 기술력을 바탕으로 최상의 IT 솔루션을 제공합니다.</p>
+  </div>
 
-</body>
+  <a href="about.html" class="about-btn">회사소개 보러가기</a>
+</section>
+
+<script>
+function toggleMenu() {
+  const menu = document.querySelector('.nav-menu');
+  menu.classList.toggle('active');
+}
+
+window.addEventListener("scroll", function () {
+  const btn = document.querySelector(".about-btn");
+
+  if (window.scrollY > 200) {
+    btn.classList.add("show");
+  } else {
+    btn.classList.remove("show");
+  }
+});
+</script>
+
+
+  </body>
 </html>
+
