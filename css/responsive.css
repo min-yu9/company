@@ -1,32 +1,95 @@
 /* 태블릿 이하 */
 @media (max-width: 768px) {
+  .nav-menu {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 200px;
 
-.nav-menu {
-position: absolute;
-top: 70px;
-right: 0;
-width: 200px;
-background: white;
-flex-direction: column;
-padding: 20px;
-border-left: 1px solid #eee;
-display: none;
+    background: #fff;
+    flex-direction: column;
+    padding: 20px;
+
+    border-left: 1px solid #eee;
+    display: none;
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .hero-content h1 {
+    font-size: 30px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+}
+@media (max-width: 768px) {
+  .hero {
+    background-position: center top; /* 필요하면 top/center/bottom으로 조정 */
+  }
+}
+@media (max-width: 768px) {
+
+  .nav-menu {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    width: 220px;
+
+    /* 유리 느낌(원하면 유지) */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    flex-direction: column;
+    padding: 20px;
+
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+
+    /* ✅ 애니메이션을 위한 기본 상태 */
+    display: flex;              /* display none 쓰면 애니메이션 불가 */
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;       /* 닫혀있을 때 클릭 방지 */
+    transition: 0.25s ease;
+  }
+
+  /* ✅ 열렸을 때 */
+  .nav-menu.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* ✅ 메뉴 텍스트 */
+  .nav-menu a {
+    color: #333 !important;
+    padding: 10px 0;
+  }
+
+  .nav-menu a:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* ✅ 햄버거 아이콘 애니메이션 */
+  .hamburger {
+    display: block;
+    transition: 0.25s ease;
+    transform-origin: center;
+  }
+
+  .hamburger.active {
+    transform: rotate(90deg) scale(1.05);
+  }
 }
 
-.nav-menu.active {
-display: flex;
-}
 
-.hamburger {
-display: block;
-}
 
-.hero-content h1 {
-font-size: 30px;
-}
-
-.hero-content p {
-font-size: 16px;
-}
-
-}
