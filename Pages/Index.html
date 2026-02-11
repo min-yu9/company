@@ -5,104 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Company_page</title>
 
+  <!-- 폰트 -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- 스타일시트 -->
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/responsive.css" />
 </head>
 
 <body>
 
-<header>
-  <div class="logo">kaizenF</div>
+  <!-- 헤더 -->
+  <header>
+    <div class="logo">kaizenF</div>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="about.html">회사소개</a></li>
+        <li><a href="#">연혁</a></li>
+        <li><a href="#">사업분야</a></li>
+        <li><a href="#">협력사</a></li>
+        <li><a href="#">문의</a></li>
+      </ul>
+      <div class="hamburger">☰</div>
+    </nav>
+  </header>
 
-  <nav>
-    <ul class="nav-menu">
-      <li><a href="about.html">회사소개</a></li>
-      <li><a href="#">연혁</a></li>
-      <li><a href="#">사업분야</a></li>
-      <li><a href="#">협력사</a></li>
-      <li><a href="#">문의</a></li>
-    </ul>
+  <!-- 메인 히어로 섹션 -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>안정적인 통신 인프라 구축 전문 기업</h1>
+      <p>신뢰와 기술력을 바탕으로 최상의 IT 솔루션을 제공합니다.</p>
+    </div>
+  </section>
 
-    <div class="hamburger">☰</div>
-  </nav>
-</header>
+  <!-- 소개 버튼 섹션 -->
+  <section class="intro-stop">
+    <a href="about.html" class="intro-btn">회사소개</a>
+  </section>
 
-<section class="hero">
-  <div class="hero-content">
-    <h1>안정적인 통신 인프라 구축 전문 기업</h1>
-    <p>신뢰와 기술력을 바탕으로 최상의 IT 솔루션을 제공합니다.</p>
-  </div>
-</section>
-
-<section class="intro-stop">
-  <a href="about.html" class="intro-btn">회사소개</a>
-</section>
-
-<script>
-
-const hamburger = document.querySelector(".hamburger");
-const menu = document.querySelector(".nav-menu");
-
-hamburger.addEventListener("click", () => {
-  menu.classList.toggle("active");
-});
-
-/* 버튼 등장 */
-const introSection = document.querySelector(".intro-stop");
-const introBtn = document.querySelector(".intro-btn");
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      introBtn.classList.add("show");
-    }
-  });
-}, { threshold: 0.6 });
-
-observer.observe(introSection);
-
-
-/* 스냅 스크롤 */
-const sections = document.querySelectorAll("section");
-
-let currentSection = 0;
-let isScrolling = false;
-let lastDirection = null;
-
-window.addEventListener("wheel", (e) => {
-
-  const direction = e.deltaY > 0 ? "down" : "up";
-
-  if (direction !== lastDirection) {
-    isScrolling = false;
-  }
-
-  if (isScrolling) return;
-
-  lastDirection = direction;
-
-  currentSection += direction === "down" ? 1 : -1;
-
-  currentSection = Math.max(0, Math.min(currentSection, sections.length - 1));
-
-  scrollToSection(currentSection);
-});
-
-function scrollToSection(index) {
-
-  isScrolling = true;
-
-  sections[index].scrollIntoView({
-    behavior: "smooth"
-  });
-
-  setTimeout(() => {
-    isScrolling = false;
-  }, 1200); //속도 조절 할려면 여기 *숫자가 클수록 속도 느려짐*
-}
-
-</script>
+  <!-- JS 파일 불러오기 -->
+  <script src="../js/script.js"></script>
 
 </body>
 </html>
