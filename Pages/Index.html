@@ -17,30 +17,153 @@
 
   <nav>
     <ul class="nav-menu">
-      <li><a href="about.html">회사소개</a></li>
-      <li><a href="#">연혁</a></li>
-      <li><a href="#">사업분야</a></li>
-      <li><a href="#">협력사</a></li>
-      <li><a href="#">문의</a></li>
+      <li><a href="#about-1">회사소개</a></li>
+      <li><a href="#about-2">비전</a></li>
+      <li><a href="#about-3">미션</a></li>
+      <li><a href="#products">솔루션</a></li>
+      <li><a href="#contact">문의</a></li>
     </ul>
 
-    <div class="hamburger">☰</div>
+    <div class="hamburger" aria-label="메뉴 열기" role="button" tabindex="0">☰</div>
   </nav>
 </header>
 
-<section class="hero">
+<!-- ✅ Dot Navigation -->
+<div class="dot-nav">
+  <span data-section="hero" class="active"></span>
+  <span data-section="about-1"></span>
+  <span data-section="about-2"></span>
+  <span data-section="about-3"></span>
+  <span data-section="products"></span>
+  <span data-section="contact"></span>
+</div>
+
+<!-- ✅ HERO: 기존 .hero 디자인 유지 (banner.jpg 그대로) -->
+<section class="hero" id="hero">
   <div class="hero-content">
     <h1>안정적인 통신 인프라 구축 전문 기업</h1>
     <p>신뢰와 기술력을 바탕으로 최상의 IT 솔루션을 제공합니다.</p>
   </div>
 </section>
 
-<section class="intro-stop">
-  <a href="about.html" class="intro-btn">회사소개</a>
+<!-- ✅ ABOUT 1 -->
+<section class="about-section" id="about-1">
+  <div class="about-wrap reveal">
+    <div class="about-img">
+      <img src="../images/a.jpg" alt="회사 소개 이미지"> <!-- 나중에 변경 -->
+    </div>
+    <div class="about-text">
+      <p class="about-kicker">COMPANY</p>
+      <h2>회사 소개</h2>
+      <p class="about-desc">
+        고객 환경에 맞춘 정보통신 인프라 설계·구축을 지향합니다. (문구 추후 수정)
+      </p>
+      <ul>
+        <li>현장 중심의 설계</li>
+        <li>안정적인 품질 관리</li>
+        <li>신속한 기술 지원</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
-<!-- ✅ JS 분리 -->
-<script src="../js/script.js"></script>
+<!-- ✅ ABOUT 2 (좌우 반전) -->
+<section class="about-section" id="about-2">
+  <div class="about-wrap reverse reveal">
+    <div class="about-img">
+      <img src="../images/b.jpg" alt="비전 이미지"> <!-- 나중에 변경 -->
+    </div>
+    <div class="about-text">
+      <p class="about-kicker">VISION</p>
+      <h2>비전</h2>
+      <p class="about-desc">
+        지속 가능한 통신 인프라로 고객 운영 안정성을 높입니다. (문구 추후 수정)
+      </p>
+      <div class="about-chips">
+        <span>안정 운영</span>
+        <span>표준 준수</span>
+        <span>품질 중심</span>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- ✅ ABOUT 3 -->
+<section class="about-section" id="about-3">
+  <div class="about-wrap reveal">
+    <div class="about-img">
+      <img src="../images/c.jpg" alt="미션 이미지"> <!-- 나중에 변경 -->
+    </div>
+    <div class="about-text">
+      <p class="about-kicker">MISSION</p>
+      <h2>미션</h2>
+      <p class="about-desc">
+        설계부터 구축·유지관리까지 책임 있게 수행합니다. (문구 추후 수정)
+      </p>
+      <ul>
+        <li>요구사항 기반 설계</li>
+        <li>책임 시공 프로세스</li>
+        <li>유지보수 대응 체계</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ PRODUCTS -->
+<section class="products-section" id="products">
+  <div class="products-wrap reveal">
+    <p class="about-kicker">SOLUTIONS</p>
+    <h2>솔루션/제품 소개</h2>
+    <p class="about-desc">나중에 폴대 있는거 제품 넣어야함</p>
+
+    <div class="product-grid">
+      <article class="product-card">
+        <h3>네트워크 구축</h3>
+        <p>사무/공공 환경에 맞춘 설계·구축</p>
+      </article>
+
+      <article class="product-card">
+        <h3>광통신 공사</h3>
+        <p>광케이블·배선·장비 구성</p>
+      </article>
+
+      <article class="product-card">
+        <h3>유지보수</h3>
+        <p>장애 대응 및 정기 점검</p>
+      </article>
+
+      <article class="product-card">
+        <h3>시스템 통합</h3>
+        <p>현장 요구에 맞춘 통합 솔루션</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-wrap reveal">
+    <p class="about-kicker">CONTACT</p>
+    <h2>문의</h2>
+    <p class="about-desc">대표번호 / 이메일 / 주소</p>
+
+    <div class="contact-box">
+      <div>
+        <div class="label">대표번호</div>
+        <div class="value">010-1241-12314</div>
+      </div>
+      <div>
+        <div class="label">이메일</div>
+        <div class="value">asdf@gmail.com</div>
+      </div>
+      <div>
+        <div class="label">주소</div>
+        <div class="value">부산광역시 어쩌고</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="../js/script.js"></script>
 </body>
 </html>

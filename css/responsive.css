@@ -90,6 +90,31 @@
     transform: rotate(90deg) scale(1.05);
   }
 }
+@media (max-width: 900px) {
+  .about-wrap {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .about-wrap.reverse .about-img,
+  .about-wrap.reverse .about-text {
+    order: initial;
+  }
+
+  .about-img img {
+    height: 320px;
+  }
+
+  .about-text h2,
+  .products-wrap h2,
+  .contact-wrap h2 {
+    font-size: 30px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 
 
