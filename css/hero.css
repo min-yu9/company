@@ -2,7 +2,7 @@
   height: 100vh;
   background:
     linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
-    url("../images/banner.jpg");
+    url("/images/banner.jpg");
   background-size: cover;
   background-position: center;
 
