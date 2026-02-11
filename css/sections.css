@@ -1,0 +1,86 @@
+.about-section,
+.products-section,
+.contact-section {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* about-2 배경 */
+#about-2 {
+  background: #f6f8fb;
+}
+
+/* products는 구분감 */
+.products-section {
+  background: #f7f8fb;
+}
+
+.about-wrap,
+.products-wrap,
+.contact-wrap {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+}
+
+/* About 2컬럼 */
+.about-wrap {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.about-wrap.reverse .about-img { order: 2; }
+.about-wrap.reverse .about-text { order: 1; }
+
+.about-img img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+}
+
+.about-kicker {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: rgba(0,0,0,0.55);
+  margin-bottom: 10px;
+}
+
+.about-text h2,
+.products-wrap h2,
+.contact-wrap h2 {
+  font-size: 38px;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  position: relative;
+  display: inline-block;
+}
+
+.about-text h2::after,
+.products-wrap h2::after,
+.contact-wrap h2::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: #2E6FBE;
+  margin-top: 10px;
+  border-radius: 3px;
+}
+
+.about-desc {
+  color: rgba(0,0,0,0.72);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.about-text ul {
+  padding-left: 18px;
+  line-height: 1.9;
+  color: rgba(0,0,0,0.75);
+}

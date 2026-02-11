@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* 스크롤 섹션(스냅) 기본 */
+html, body {
+  height: 100%;
+  overflow-y: hidden;
+}
+
+section {
+  height: 100vh;
+}
+
+html { scroll-behavior: smooth; }

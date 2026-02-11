@@ -1,0 +1,85 @@
+/* Header 기본 상태 (히어로 위) */
+header {
+  width: 100%;
+  padding: 20px 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  background: transparent;
+  border-bottom: none;
+  transition: 0.4s ease;
+}
+
+/* 히어로 위에서는 글자 흰색 */
+header .logo,
+header .nav-menu a {
+  color: white;
+  transition: 0.4s ease;
+}
+
+/* 스크롤 후 */
+header.scrolled {
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+header.scrolled .logo {
+  color: #1E3A5F;
+}
+
+header.scrolled .nav-menu a {
+  color: #333;
+}
+
+header.scrolled .nav-menu a:hover {
+  color: #2E6FBE;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 700;
+  color: #1E3A5F;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-menu {
+  list-style: none;
+  display: flex;
+  gap: 50px;
+}
+
+.nav-menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  transition: 0.3s;
+  font-size: 18px;
+}
+
+.nav-menu a:hover {
+  color: #2E6FBE;
+}
+
+/* 햄버거 기본(히어로 위) */
+.hamburger {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: white;
+  transition: 0.3s;
+}
+
+/* 스크롤 후 */
+header.scrolled .hamburger {
+  color: #333;
+}

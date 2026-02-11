@@ -1,0 +1,28 @@
+.hero {
+  height: 100vh;
+  background:
+    linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+    url("../images/banner.jpg");
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-content h1,
+.hero-content p {
+  color: white;
+}
+
+/* (주석 처리된 hero-content 박스는 그대로 원하면 여기 두면 됨)
+.hero-content {
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 50px 60px;
+  border-radius: 20px;
+}
+*/
