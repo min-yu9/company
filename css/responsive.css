@@ -75,3 +75,16 @@
 
   .product-grid { grid-template-columns: 1fr; }
 }
+/* ✅ 모바일 터치 스크롤 활성화 */
+@media (max-width: 768px) {
+  html, body {
+    height: auto;          /* 100% 고정 해제 */
+    overflow-y: auto;      /* 스크롤 허용 */
+    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+  }
+
+  section {
+    height: auto;          /* 100vh 고정 해제 (내용에 따라 자연스럽게) */
+    min-height: 100vh;     /* 화면 한 장 느낌은 유지 */
+  }
+}
