@@ -83,3 +83,24 @@ nav {
 header.scrolled .hamburger {
   color: #333;
 }
+@media (max-width: 768px) {
+  .nav-menu {
+    width: 160px;        /* ✅ 줄이기 */
+    padding: 12px 14px;  /* ✅ 줄이기 */
+    top: 56px;           /* header에 맞춤 */
+    right: 12px;
+
+    border-radius: 12px;
+  }
+
+  .nav-menu a {
+    padding: 8px 0;      /* ✅ 줄이기 */
+    font-size: 14px;     /* ✅ 줄이기 */
+  }
+}
+@media (max-width: 768px) {
+  .nav-menu {
+    max-height: 70vh;
+    overflow: auto;
+  }
+}
