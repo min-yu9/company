@@ -3,7 +3,10 @@ export function initSnapScroll() {
   if (!sections.length) return;
 
   // 모바일/터치 환경은 기본 스크롤이 더 자연스러워서 스냅 비활성화(원하면 조건 삭제 가능)
-  const isTouch = window.matchMedia("(max-width: 768px)").matches;
+  const isTouch =
+  window.matchMedia("(max-width: 768px)").matches ||
+  window.matchMedia("(pointer: coarse)").matches ||
+  window.matchMedia("(hover: none)").matches;
   if (isTouch) {
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
