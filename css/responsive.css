@@ -1,9 +1,38 @@
 /* 태블릿 이하 */
 @media (max-width: 768px) {
+
+  /* ✅ 모바일 터치 스크롤: base.css의 overflow:hidden을 덮어씀 */
+  html, body {
+    height: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ✅ 헤더: 모바일에서 과한 여백 줄이기 */
+  header{
+    padding: 12px 16px;
+  }
+
+  .logo{
+    font-size: 22px;
+  }
+
+  .hamburger{
+    display: block;
+    font-size: 24px;
+    transition: 0.25s ease;
+    transform-origin: center;
+  }
+
+  .hamburger.active{
+    transform: rotate(90deg) scale(1.05);
+  }
+
+  /* ✅ 모바일 메뉴 */
   .nav-menu {
     position: absolute;
-    top: 70px;
-    right: 20px;
+    top: 56px;      /* header 높이에 맞춤 */
+    right: 16px;
     width: 220px;
 
     background: rgba(255, 255, 255, 0.95);
@@ -38,22 +67,27 @@
     border-bottom: 1px solid #f0f0f0;
   }
 
-  .hamburger {
-    display: block;
-    transition: 0.25s ease;
-    transform-origin: center;
-  }
-
-  .hamburger.active {
-    transform: rotate(90deg) scale(1.05);
-  }
-
+  /* ✅ 텍스트 크기 */
   .hero-content h1 { font-size: 30px; }
-  .hero-content p { font-size: 16px; }
+  .hero-content p  { font-size: 16px; }
 
-  .hero { background-position: center top; }
+  /* ✅ “울컥” 방지 핵심: 100vh 대신 svh 사용 + height:auto */
+  .hero {
+    background-position: center top;
+    min-height: 100svh;
+    height: auto;
+  }
+
+  section{
+    min-height: 100svh;
+    height: auto;
+  }
+
+  /* iOS에서 더 안정적으로(선택) */
+  /* .hero, section { min-height: -webkit-fill-available; } */
 }
 
+/* 900px 이하(태블릿~작은 노트북) */
 @media (max-width: 900px) {
   .about-wrap {
     grid-template-columns: 1fr;
@@ -75,47 +109,3 @@
 
   .product-grid { grid-template-columns: 1fr; }
 }
-/* ✅ 모바일 터치 스크롤 활성화 */
-@media (max-width: 768px) {
-  html, body {
-    height: auto;          /* 100% 고정 해제 */
-    overflow-y: auto;      /* 스크롤 허용 */
-    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
-  }
-
-  section {
-    height: auto;          /* 100vh 고정 해제 (내용에 따라 자연스럽게) */
-    min-height: 100vh;     /* 화면 한 장 느낌은 유지 */
-  }
-}
-
-@media (max-width: 768px) {
-  header{
-    padding: 12px 16px;      /* ✅ 모바일 헤더 여백 줄이기 */
-  }
-
-  .logo{
-    font-size: 22px;         /* ✅ 로고 크기 살짝 축소 */
-  }
-
-  .hamburger{
-    font-size: 24px;         /* ✅ 햄버거 크기도 균형 맞추기 */
-  }
-
-  /* 모바일 메뉴가 헤더 아래로 자연스럽게 */
-  .nav-menu{
-    top: 56px;               /* header 높이에 맞춰 조정 (필요하면 52~64px로 미세조정) */
-    right: 16px;
-  }
-}
-@media (max-width: 768px) {
-  .hero {
-    min-height: 100svh;
-    height: auto;
-  }
-  section {
-    min-height: 100svh;
-    height: auto;
-  }
-}
-
