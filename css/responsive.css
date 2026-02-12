@@ -110,8 +110,8 @@
 }
 @media (max-width: 768px) {
   .hero{
-    height: 100svh;      /* ✅ 모바일 UI 변화에도 덜 흔들리는 높이 */
-    min-height: 100svh;
+    min-height: 100svh; /* ✅ 모바일 UI 변화에도 덜 흔들리는 높이 */
+    height: auto;
   }
 }
 
