@@ -87,7 +87,7 @@ header.scrolled .hamburger {
   .nav-menu {
     width: 160px;        /* ✅ 줄이기 */
     padding: 12px 14px;  /* ✅ 줄이기 */
-    top: 56px;           /* header에 맞춤 */
+    top: calc(56px + env(safe-area-inset-top));           /* header + safe area */
     right: 12px;
 
     border-radius: 12px;
