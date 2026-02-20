@@ -1,12 +1,14 @@
+import { qs, qsa, on } from "../utils/dom.js";
+
 export function initDotNav() {
-  const dotNav = document.querySelector(".dot-nav");
+  const dotNav = qs(".dot-nav");
   if (!dotNav) return;
 
-  const dots = Array.from(dotNav.querySelectorAll("span"));
-  const sections = Array.from(document.querySelectorAll("section"));
+  const dots = qsa("span", dotNav);
+  const sections = qsa("section");
   if (!dots.length || !sections.length) return;
 
-  const hero = document.querySelector("#hero") || document.querySelector(".hero");
+  const hero = qs("#hero") || qs(".hero");
 
   const setActive = (id) => {
     dots.forEach((d) => d.classList.remove("active"));

@@ -1,0 +1,16 @@
+/* Snap-scrolling only applies when JS adds `.is-snap` to <body>.
+   This avoids forcing overflow:hidden in all situations. */
+html, body {
+  height: auto;
+  overflow-y: auto;
+}
+
+body.is-snap {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* sections behave as pages only in snap mode */
+body.is-snap section {
+  height: 100vh;
+}

@@ -1,5 +1,7 @@
+import { on } from "../utils/dom.js";
+
 export function initSmoothAnchors() {
-  document.addEventListener("click", (e) => {
+  on(document, "click", (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
 

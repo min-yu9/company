@@ -1,3 +1,5 @@
+let __APP_INIT_DONE__ = false;
+
 import { initMenu } from "./ui/menu.js";
 import { initSmoothAnchors } from "./ui/smoothAnchor.js";
 import { initReveal } from "./ui/reveal.js";
@@ -46,6 +48,8 @@ function initStableViewportVars() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (__APP_INIT_DONE__) return;
+  __APP_INIT_DONE__ = true;
   initStableViewportVars();
 
   initMenu();

@@ -1,6 +1,8 @@
+import { qs, on } from "../utils/dom.js";
+
 export function initMenu() {
-  const hamburger = document.querySelector(".hamburger");
-  const navMenu = document.querySelector(".nav-menu");
+  const hamburger = qs(".hamburger");
+  const navMenu = qs(".nav-menu");
   if (!hamburger || !navMenu) return;
 
   const open = () => {

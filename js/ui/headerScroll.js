@@ -1,6 +1,8 @@
+import { qs } from "../utils/dom.js";
+
 export function initHeaderScroll() {
-  const header = document.querySelector("header");
-  const hero = document.querySelector("#hero") || document.querySelector(".hero");
+  const header = qs("header");
+  const hero = qs("#hero") || qs(".hero");
   if (!header || !hero) return;
 
   const set = (isHeroVisible) => {

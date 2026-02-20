@@ -1,29 +1,30 @@
+import { qsa, qs, isTouchLike, isSmallScreen, prefersReducedMotion } from "../utils/dom.js";
+
 export function initSnapScroll() {
-  const sections = Array.from(document.querySelectorAll("section"));
+  const sections = qsa("section");
   if (!sections.length) return;
 
-  // 모바일/터치 환경은 기본 스크롤이 더 자연스러워서 스냅 비활성화
-  const isTouch =
-    window.matchMedia("(max-width: 768px)").matches ||
-    window.matchMedia("(pointer: coarse)").matches ||
-    window.matchMedia("(hover: none)").matches;
+  const touch = isSmallScreen() || isTouchLike();
+  const reduced = prefersReducedMotion();
 
-  if (isTouch) {
-    document.documentElement.style.overflowY = "auto";
-    document.body.style.overflowY = "auto";
+  // Enable/disable snap mode via body class
+  const body = document.body;
+  if (touch) {
+    body.classList.remove("is-snap");
     return;
   }
+  body.classList.add("is-snap");
 
   let currentIndex = 0;
 
-  // 같은 방향 연타만 막고, 반대 방향은 즉시 허용
+  // Same-direction spam lock; reverse direction allowed immediately
   let locked = false;
   let lastDir = 0;
   let unlockTimer = 0;
 
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
-  // 현재 진행 중인 smooth를 "끊고" 새 smooth를 시작하기 위한 트릭
+  // Cancel any ongoing smooth so the next smooth starts cleanly
   const cancelOngoingScroll = () => {
     window.scrollTo({ top: window.scrollY, behavior: "auto" });
   };
@@ -33,7 +34,7 @@ export function initSnapScroll() {
     sections[currentIndex].scrollIntoView({ behavior, block: "start" });
   };
 
-  // 초기 위치(해시가 있으면 그쪽으로)
+  // Initialize index from hash
   const hash = window.location.hash;
   if (hash) {
     const targetIdx = sections.findIndex((s) => `#${s.id}` === hash);
@@ -45,7 +46,6 @@ export function initSnapScroll() {
     lastDir = dir;
     if (unlockTimer) window.clearTimeout(unlockTimer);
 
-    // 짧은 잠금: 자연스럽게 연속 스크롤 방지
     unlockTimer = window.setTimeout(() => {
       locked = false;
       unlockTimer = 0;
@@ -58,25 +58,25 @@ export function initSnapScroll() {
     unlockTimer = 0;
   };
 
-  // 아주 작은 휠 떨림은 무시(트랙패드 미세 입력 완화)
   const MIN_DELTA = 6;
 
+  const isMenuOpen = () => qs(".nav-menu")?.classList.contains("active");
+
   const onWheel = (e) => {
-    const navMenu = document.querySelector(".nav-menu");
-    if (navMenu?.classList.contains("active")) return;
+    if (isMenuOpen()) return;
 
-    // 스냅 스크롤이므로 기본 스크롤은 막음
     e.preventDefault();
-
     if (Math.abs(e.deltaY) < MIN_DELTA) return;
 
     const dir = e.deltaY > 0 ? 1 : -1;
 
-    // 잠금 중이라도 반대 방향이면 즉시 "부드럽게" 이동
+    // If reduced motion, jump without smooth but still keep reverse instant
+    const behavior = reduced ? "auto" : "smooth";
+
     if (locked && dir !== lastDir) {
       forceUnlock();
-      cancelOngoingScroll();         // 끊고
-      scrollToIndex(currentIndex + dir, "smooth"); // 다시 smooth
+      cancelOngoingScroll();
+      scrollToIndex(currentIndex + dir, behavior);
       lock(dir);
       return;
     }
@@ -84,24 +84,25 @@ export function initSnapScroll() {
     if (locked) return;
 
     cancelOngoingScroll();
-    scrollToIndex(currentIndex + dir, "smooth");
+    scrollToIndex(currentIndex + dir, behavior);
     lock(dir);
   };
 
   window.addEventListener("wheel", onWheel, { passive: false });
 
-  // 키보드도 동일하게
   window.addEventListener("keydown", (e) => {
     const isDown = e.key === "ArrowDown" || e.key === "PageDown";
     const isUp = e.key === "ArrowUp" || e.key === "PageUp";
     if (!isDown && !isUp) return;
+    if (isMenuOpen()) return;
 
     const dir = isDown ? 1 : -1;
+    const behavior = reduced ? "auto" : "smooth";
 
     if (locked && dir !== lastDir) {
       forceUnlock();
       cancelOngoingScroll();
-      scrollToIndex(currentIndex + dir, "smooth");
+      scrollToIndex(currentIndex + dir, behavior);
       lock(dir);
       return;
     }
@@ -109,11 +110,11 @@ export function initSnapScroll() {
     if (locked) return;
 
     cancelOngoingScroll();
-    scrollToIndex(currentIndex + dir, "smooth");
+    scrollToIndex(currentIndex + dir, behavior);
     lock(dir);
   });
 
-  // 현재 보이는 섹션 인덱스 추적
+  // Keep currentIndex in sync
   if ("IntersectionObserver" in window) {
     const obs = new IntersectionObserver(
       (entries) => {
@@ -127,4 +128,12 @@ export function initSnapScroll() {
     );
     sections.forEach((s) => obs.observe(s));
   }
+
+  // Re-evaluate on resize (switch between snap/non-snap)
+  const onResize = () => {
+    const nowTouch = isSmallScreen() || isTouchLike();
+    if (nowTouch) body.classList.remove("is-snap");
+    else body.classList.add("is-snap");
+  };
+  window.addEventListener("resize", onResize, { passive: true });
 }
