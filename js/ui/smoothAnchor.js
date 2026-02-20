@@ -1,53 +1,37 @@
 import { on } from "../utils/dom.js";
 
-function waitForScrollEnd({ timeout = 2200, idle = 140 } = {}) {
-  return new Promise((resolve) => {
-    const start = performance.now();
-    let lastY = window.scrollY;
-    let lastChange = performance.now();
-    let rafId = null;
-
-    const tick = () => {
-      const now = performance.now();
-      const y = window.scrollY;
-
-      if (Math.abs(y - lastY) > 0.5) {
-        lastY = y;
-        lastChange = now;
-      }
-
-      // idle 만큼 움직임 없으면 "스크롤 끝"으로 간주
-      if (now - lastChange >= idle) {
-        cancelAnimationFrame(rafId);
-        resolve();
-        return;
-      }
-
-      if (now - start >= timeout) {
-        cancelAnimationFrame(rafId);
-        resolve();
-        return;
-      }
-
-      rafId = requestAnimationFrame(tick);
-    };
-
-    rafId = requestAnimationFrame(tick);
-  });
-}
-
-function scrollToProductsBottom() {
-  const products = document.querySelector("#products");
-  if (!products) return null;
-
+function getProductsBottomTargetTop(products) {
   const rect = products.getBoundingClientRect();
-  // products의 bottom이 뷰포트 바닥 근처(= footer-peek 트리거 지점)에 오도록 이동
-  const targetTop = window.scrollY + (rect.bottom - window.innerHeight) + 10;
+  // products 하단이 뷰포트 하단보다 살짝 아래로 가게(= 조건 만족) 여유를 줌
+  const targetTop = window.scrollY + (rect.bottom - window.innerHeight) + 140;
   return Math.max(0, targetTop);
 }
 
+function waitUntilAtBottom(products, cb, { threshold = 40, timeout = 2500 } = {}) {
+  const start = performance.now();
+
+  const tick = () => {
+    const rect = products.getBoundingClientRect();
+    const bottomDist = rect.bottom - window.innerHeight;
+
+    if (bottomDist < threshold) {
+      cb(true);
+      return;
+    }
+
+    if (performance.now() - start > timeout) {
+      cb(false);
+      return;
+    }
+
+    requestAnimationFrame(tick);
+  };
+
+  requestAnimationFrame(tick);
+}
+
 export function initSmoothAnchors() {
-  on(document, "click", async (e) => {
+  on(document, "click", (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
 
@@ -58,34 +42,32 @@ export function initSmoothAnchors() {
     if (!target) return;
 
     const wantsFooter = a.hasAttribute("data-open-footer");
-
     e.preventDefault();
 
-    // ✅ 문의 버튼: 스크롤이 "끝난 다음" footer-peek이 자연스럽게 나오게
+    // ✅ 문의: 스크롤이 끝까지 내려간 뒤(도달 감지) footer-peek를 자동으로 열기
     if (wantsFooter && href === "#products") {
+      const products = target;
       const ctl = window.__footerPeek;
 
-      // 깜빡임 방지: 자동 트리거 잠깐 막고, 먼저 닫아둠
+      // 내려가는 동안 close만 막아두기(깜빡임 방지)
       ctl?.setAutoSuppressed?.(true);
       ctl?.closePeek?.();
 
-      const y = scrollToProductsBottom();
-      if (y != null) {
-        window.scrollTo({ top: y, behavior: "smooth" });
-      } else {
-        target.scrollIntoView({ behavior: "smooth" });
-      }
+      const y = getProductsBottomTargetTop(products);
+      window.scrollTo({ top: y, behavior: "smooth" });
+
+      // ⭐ 핵심: 프로그램 스크롤은 마지막 구간에서 이벤트/스냅 로직 때문에 open이 안될 수 있어서,
+      // 실제로 "바닥 도달"을 rAF로 감지한 뒤 openPeek를 직접 호출
+      waitUntilAtBottom(products, () => {
+        ctl?.openPeek?.();
+        ctl?.setAutoSuppressed?.(false);
+      });
 
       history.replaceState(null, "", href);
-
-      // 스크롤이 멈춘 뒤에 열기
-      await waitForScrollEnd();
-      ctl?.setAutoSuppressed?.(false);
-      ctl?.openPeek?.();
       return;
     }
 
-    // 기본 앵커 스크롤
+    // 기본 앵커
     target.scrollIntoView({ behavior: "smooth" });
     history.replaceState(null, "", href);
   });

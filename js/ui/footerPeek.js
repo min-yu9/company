@@ -1,4 +1,4 @@
-import { qs, on } from "../utils/dom.js";
+import { qs } from "../utils/dom.js";
 
 export function initFooterPeek() {
   const el = qs("#footerPeek");
@@ -36,29 +36,39 @@ export function initFooterPeek() {
     autoSuppressed = !!v;
   };
 
-  // For non-snap (mobile/touch): show when user reaches bottom of products
+  // ✅ 수정 포인트:
+  // - autoSuppressed(문의 클릭으로 프로그램 스크롤 중)일 때도 "열기"는 허용
+  // - 다만 닫기(close)는 막아서, 스크롤 도중 깜빡임/사라짐 방지
   const onScroll = () => {
-    // If snap mode, snapScroll will manage open/close
     if (document.body.classList.contains("is-snap")) return;
-    // ✅ 프로그램 스크롤 중에는 자동 open/close 금지 (문의 클릭 시 깜빡임 방지)
-    if (autoSuppressed) return;
 
     const rect = products.getBoundingClientRect();
     const bottomDist = rect.bottom - window.innerHeight;
 
-    // Start showing when within 40px of bottom (feel like it peeks up)
-    if (bottomDist < 40) openPeek();
-    else closePeek();
+    // 바닥 근처면 즉시 열기
+    if (bottomDist < 10) {
+      openPeek();
+      // 한번 열렸으면 억제 해제해서 이후 자연스러운 자동 동작
+      if (autoSuppressed) autoSuppressed = false;
+      return;
+    }
+
+    // 프로그램 스크롤 중에는 닫지 않음(깜빡임 방지)
+    if (autoSuppressed) return;
+
+    closePeek();
   };
 
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", () => {
-    // 열려있으면 높이 재계산
-    if (open) setPeekHeightVar();
-    onScroll();
-  }, { passive: true });
+  window.addEventListener(
+    "resize",
+    () => {
+      if (open) setPeekHeightVar();
+      onScroll();
+    },
+    { passive: true }
+  );
 
-  // init
   closePeek();
   onScroll();
 
