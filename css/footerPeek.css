@@ -75,3 +75,16 @@
   }
   .footer-peek .links{ justify-content: flex-start; }
 }
+
+/* ===============================
+   products 섹션 같이 밀어올리기
+=============================== */
+
+#products {
+  transition: transform 260ms ease;
+  will-change: transform;
+}
+
+body.footer-peek-open #products {
+  transform: translateY(calc(-1 * var(--footer-peek-h, 0px)));
+}
