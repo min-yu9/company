@@ -1,0 +1,77 @@
+/* Footer Peek panel (appears from bottom without dimming) */
+.footer-peek {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1500;
+
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+
+  transition: transform 260ms ease, opacity 180ms ease;
+}
+
+.footer-peek.is-open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* visual style similar to screenshot: grey bar */
+.footer-peek .peek-inner {
+  background: #2f3942; /* dark grey */
+  color: #fff;
+  padding: 22px 0;
+  border-top: 1px solid rgba(255,255,255,0.10);
+}
+
+.footer-peek .peek-wrap{
+  width: min(1100px, 92%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 22px;
+  align-items: start;
+}
+
+.footer-peek .company {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.footer-peek .biz {
+  font-size: 13px;
+  line-height: 1.7;
+  opacity: 0.92;
+}
+
+.footer-peek .links{
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 13px;
+  opacity: 0.92;
+}
+
+.footer-peek .links a{
+  color: rgba(255,255,255,0.92);
+  text-decoration: none;
+}
+.footer-peek .links a:hover{
+  text-decoration: underline;
+}
+
+/* make room on mobile safe area */
+@media (max-width: 768px){
+  .footer-peek .peek-inner{
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+  .footer-peek .peek-wrap{
+    grid-template-columns: 1fr;
+  }
+  .footer-peek .links{ justify-content: flex-start; }
+}

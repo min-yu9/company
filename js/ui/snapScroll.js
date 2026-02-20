@@ -17,6 +17,9 @@ export function initSnapScroll() {
 
   let currentIndex = 0;
 
+  const productsIndex = sections.findIndex((s) => s.id === "products");
+  const footerPeek = window.__footerPeek;
+
   // Same-direction spam lock; reverse direction allowed immediately
   let locked = false;
   let lastDir = 0;
@@ -62,6 +65,10 @@ export function initSnapScroll() {
 
   const isMenuOpen = () => qs(".nav-menu")?.classList.contains("active");
 
+  const openPeek = () => footerPeek && footerPeek.openPeek && footerPeek.openPeek();
+  const closePeek = () => footerPeek && footerPeek.closePeek && footerPeek.closePeek();
+  const peekIsOpen = () => footerPeek && footerPeek.isOpen && footerPeek.isOpen();
+
   const onWheel = (e) => {
     if (isMenuOpen()) return;
 
@@ -75,16 +82,55 @@ export function initSnapScroll() {
 
     if (locked && dir !== lastDir) {
       forceUnlock();
+
+      // reverse direction: if peek is open and user scrolls up, close peek first
+      if (dir === -1 && peekIsOpen()) {
+        closePeek();
+        lock(dir);
+        return;
+      }
+
+      // if at products and scrolling down while locked, show peek first
+      if (dir === 1 && productsIndex >= 0 && currentIndex === productsIndex && !peekIsOpen()) {
+        openPeek();
+        lock(dir);
+        return;
+      }
+
       cancelOngoingScroll();
       scrollToIndex(currentIndex + dir, behavior);
+      if (currentIndex !== productsIndex) closePeek();
       lock(dir);
       return;
     }
 
     if (locked) return;
 
+    // PRODUCTS -> CONTACT 진입 전에 "footer peek"를 한 번 보여주기
+    if (dir === 1 && productsIndex >= 0 && currentIndex === productsIndex && !peekIsOpen()) {
+      openPeek();
+      lock(dir);
+      return;
+    }
+
+    // Peek가 열린 상태에서 위로 올리면(반대 방향) 먼저 peek 닫고 products 유지
+    if (dir === -1 && peekIsOpen()) {
+      closePeek();
+      lock(dir);
+      return;
+    }
+
+    if (dir === 1 && currentIndex === sections.length - 1) {
+      // 마지막 섹션에서는 peek만 유지하고 더 아래로 이동하지 않음
+      openPeek();
+      lock(dir);
+      return;
+    }
+
     cancelOngoingScroll();
     scrollToIndex(currentIndex + dir, behavior);
+    // 섹션 이동하면 peek 닫기(깔끔하게)
+    if (currentIndex !== productsIndex) closePeek();
     lock(dir);
   };
 
@@ -109,6 +155,13 @@ export function initSnapScroll() {
 
     if (locked) return;
 
+    if (dir === 1 && currentIndex === sections.length - 1) {
+      // 마지막 섹션에서는 peek만 유지하고 더 아래로 이동하지 않음
+      openPeek();
+      lock(dir);
+      return;
+    }
+
     cancelOngoingScroll();
     scrollToIndex(currentIndex + dir, behavior);
     lock(dir);
@@ -121,7 +174,7 @@ export function initSnapScroll() {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           const idx = sections.indexOf(entry.target);
-          if (idx >= 0) currentIndex = idx;
+          if (idx >= 0) { currentIndex = idx; if (currentIndex !== productsIndex) closePeek(); }
         });
       },
       { threshold: 0.6 }

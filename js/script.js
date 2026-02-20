@@ -6,6 +6,7 @@ import { initReveal } from "./ui/reveal.js";
 import { initHeaderScroll } from "./ui/headerScroll.js";
 import { initSnapScroll } from "./ui/snapScroll.js";
 import { initDotNav } from "./ui/dotNav.js";
+import { initFooterPeek } from "./ui/footerPeek.js";
 
 /**
  * 모바일 브라우저 주소창/하단바 UI가 나타나며 뷰포트 높이가 변하는 문제 대응.
@@ -56,6 +57,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initSmoothAnchors();
   initReveal();
   initHeaderScroll();
+
+  // Footer peek controller (used by snapScroll + mobile scroll)
+  window.__footerPeek = initFooterPeek();
+
   initSnapScroll();
   initDotNav();
 });
