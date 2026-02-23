@@ -1,4 +1,4 @@
-import { qs } from "../utils/dom.js";
+import { qs, rafThrottle } from "../utils/dom.js";
 import { CONFIG } from "../config.js";
 
 export function initFooterPeek({ config = CONFIG.footerPeek } = {}) {
@@ -55,18 +55,27 @@ export function initFooterPeek({ config = CONFIG.footerPeek } = {}) {
     closePeek();
   };
 
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener(
-    "resize",
-    () => {
-      if (open) setPeekHeightVar();
-      onScroll();
-    },
-    { passive: true }
-  );
+  const onScrollRaf = rafThrottle(onScroll);
+
+  const onResize = () => {
+    if (open) setPeekHeightVar();
+    onScrollRaf();
+  };
+
+  window.addEventListener("scroll", onScrollRaf, { passive: true });
+  window.addEventListener("resize", onResize, { passive: true });
 
   closePeek();
   onScroll();
 
-  return { openPeek, closePeek, isOpen, setAutoSuppressed };
+  return {
+    openPeek,
+    closePeek,
+    isOpen,
+    setAutoSuppressed,
+    destroy() {
+      window.removeEventListener("scroll", onScrollRaf);
+      window.removeEventListener("resize", onResize);
+    },
+  };
 }

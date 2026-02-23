@@ -5,15 +5,11 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
   const sections = qsa("section");
   if (!sections.length) return { destroy() {} };
 
-  const touch = isSmallScreen() || isTouchLike();
   const reduced = prefersReducedMotion();
 
   const body = document.body;
-  if (touch) {
-    body.classList.remove("is-snap");
-    return { destroy() {} };
-  }
-  body.classList.add("is-snap");
+
+  let enabled = false;
 
   let currentIndex = 0;
   const productsIndex = sections.findIndex((s) => s.id === "products");
@@ -130,7 +126,27 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
     lock(dir);
   };
 
-  window.addEventListener("wheel", onWheel, { passive: false });
+  const bind = () => {
+    if (enabled) return;
+    enabled = true;
+    body.classList.add("is-snap");
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("keydown", onKeydown);
+    window.addEventListener("resize", onResize, { passive: true });
+    obs && sections.forEach((s) => obs.observe(s));
+  };
+
+  const unbind = () => {
+    if (!enabled) return;
+    enabled = false;
+    body.classList.remove("is-snap");
+    window.removeEventListener("wheel", onWheel);
+    window.removeEventListener("keydown", onKeydown);
+    window.removeEventListener("resize", onResize);
+    obs?.disconnect();
+    // snap 모드 해제 시 peek는 스크롤 기반으로 열리도록 넘기고,
+    // 여기서는 강제 닫지 않음(사용자 스크롤 위치에 따라 footerPeek가 결정)
+  };
 
   const onKeydown = (e) => {
     const isDown = e.key === "ArrowDown" || e.key === "PageDown";
@@ -168,7 +184,7 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
     if (currentIndex !== productsIndex) safeClosePeek();
     lock(dir);
   };
-  window.addEventListener("keydown", onKeydown);
+  // listeners are bound via bind()
 
   // Keep currentIndex in sync
   let obs = null;
@@ -186,22 +202,20 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
       },
       { threshold: config.sectionThreshold }
     );
-    sections.forEach((s) => obs.observe(s));
   }
 
   const onResize = () => {
-    const nowTouch = isSmallScreen() || isTouchLike();
-    if (nowTouch) body.classList.remove("is-snap");
-    else body.classList.add("is-snap");
+    const touch = isSmallScreen() || isTouchLike();
+    if (touch) unbind();
+    else bind();
   };
-  window.addEventListener("resize", onResize, { passive: true });
+
+  // Initial enable/disable
+  onResize();
 
   return {
     destroy() {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("keydown", onKeydown);
-      window.removeEventListener("resize", onResize);
-      if (obs) obs.disconnect();
+      unbind();
     },
   };
 }

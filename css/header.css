@@ -1,4 +1,9 @@
-/* Header 기본 상태 (히어로 위) */
+/* Header
+   - Default (hero): transparent + white text
+   - Scrolled: white bg + dark text
+   실무 기준: 색상은 header 상태에서만 결정(logo/link 기본 규칙은 color 미지정)
+*/
+
 header {
   width: 100%;
   padding: 20px 80px;
@@ -13,94 +18,93 @@ header {
 
   background: transparent;
   border-bottom: none;
-  transition: 0.4s ease;
+  transition: background 0.4s ease, border-color 0.4s ease;
 }
 
-/* 히어로 위에서는 글자 흰색 */
-header .logo,
-header .nav-menu a {
-  color: white;
-  transition: 0.4s ease;
-}
-
-/* 스크롤 후 */
-header.scrolled {
-  background: white;
-  border-bottom: 1px solid #eee;
-}
-
-header.scrolled .logo {
-  color: #1E3A5F;
-}
-
-header.scrolled .nav-menu a {
-  color: #333;
-}
-
-header.scrolled .nav-menu a:hover {
-  color: #2E6FBE;
-}
-
-.logo {
+/* ---------- Brand / Nav base (no color here) ---------- */
+.logo{
   font-size: 30px;
   font-weight: 700;
-  color: #1E3A5F;
+  text-decoration: none; /* anchor reset */
 }
 
-nav {
+.logo:visited{
+  color: inherit;
+}
+
+nav{
   display: flex;
   align-items: center;
 }
 
-.nav-menu {
+.nav-menu{
   list-style: none;
   display: flex;
   gap: 50px;
 }
 
-.nav-menu a {
+.nav-menu a{
   text-decoration: none;
-  color: #333;
   font-weight: 600;
-  transition: 0.3s;
+  transition: color 0.3s ease;
   font-size: 18px;
+  color: inherit; /* header 상태 색상을 그대로 사용 */
 }
 
-.nav-menu a:hover {
+/* ---------- Header state colors ---------- */
+/* Hero 위(기본): 흰색 */
+header:not(.scrolled) .logo,
+header:not(.scrolled) .nav-menu a{
+  color: #fff;
+}
+
+/* 스크롤 후 */
+header.scrolled{
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+header.scrolled .logo{
+  color: #1E3A5F;
+}
+
+header.scrolled .nav-menu a{
+  color: #333;
+}
+
+header.scrolled .nav-menu a:hover{
   color: #2E6FBE;
 }
 
 /* 햄버거 기본(히어로 위) */
-.hamburger {
+.hamburger{
   display: none;
   font-size: 26px;
   cursor: pointer;
-  color: white;
-  transition: 0.3s;
+  color: #fff;
+  transition: color 0.3s ease, transform 0.25s ease;
 }
 
 /* 스크롤 후 */
-header.scrolled .hamburger {
+header.scrolled .hamburger{
   color: #333;
 }
-@media (max-width: 768px) {
-  .nav-menu {
-    width: 160px;        /* ✅ 줄이기 */
-    padding: 12px 14px;  /* ✅ 줄이기 */
-    top: calc(56px + env(safe-area-inset-top));           /* header + safe area */
+
+/* ---------- Mobile tweaks (기존 유지) ---------- */
+@media (max-width: 768px){
+  .nav-menu{
+    width: 160px;
+    padding: 12px 14px;
+    top: calc(56px + env(safe-area-inset-top));
     right: 12px;
 
     border-radius: 12px;
-  }
-
-  .nav-menu a {
-    padding: 8px 0;      /* ✅ 줄이기 */
-    font-size: 14px;     /* ✅ 줄이기 */
-  }
-}
-@media (max-width: 768px) {
-  .nav-menu {
     max-height: 70vh;
     overflow: auto;
+  }
+
+  .nav-menu a{
+    padding: 8px 0;
+    font-size: 14px;
   }
 }

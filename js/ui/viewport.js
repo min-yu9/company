@@ -6,7 +6,7 @@ import { CONFIG } from "../config.js";
  * - --lvh: 관측된 '최대' 뷰포트 높이 기반 (레이아웃 안정)
  * - --dvh: 현재 뷰포트 높이 기반 (필요 시 사용)
  */
-export function initStableViewportVars() {
+export function initStableViewportVars({ config = CONFIG.viewport } = {}) {
   const root = document.documentElement;
   let maxH = 0;
 
@@ -24,17 +24,32 @@ export function initStableViewportVars() {
 
   apply();
 
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", applyRaf, { passive: true });
-    window.visualViewport.addEventListener("scroll", applyRaf, { passive: true });
+  const vv = window.visualViewport;
+  const onVVResize = applyRaf;
+  const onVVScroll = applyRaf;
+  const onResize = applyRaf;
+  const onOrientation = () => {
+    maxH = 0;
+    setTimeout(apply, config.orientationResetDelayMs);
+  };
+
+  if (vv) {
+    vv.addEventListener("resize", onVVResize, { passive: true });
+    vv.addEventListener("scroll", onVVScroll, { passive: true });
   }
 
-  window.addEventListener("resize", applyRaf, { passive: true });
+  window.addEventListener("resize", onResize, { passive: true });
+  window.addEventListener("orientationchange", onOrientation);
 
-  window.addEventListener("orientationchange", () => {
-    maxH = 0;
-    setTimeout(apply, CONFIG.viewport.orientationResetDelayMs);
-  });
-
-  return { refresh: apply };
+  return {
+    refresh: apply,
+    destroy() {
+      if (vv) {
+        vv.removeEventListener("resize", onVVResize);
+        vv.removeEventListener("scroll", onVVScroll);
+      }
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onOrientation);
+    },
+  };
 }

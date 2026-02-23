@@ -22,20 +22,27 @@ export function initDotNav({ config = CONFIG.dotNav } = {}) {
     if (target) target.scrollIntoView({ behavior: "smooth" });
   };
 
-  const onDotActivate = (dot) => () => go(dot.dataset.section);
+  // Keep listener references so we can cleanly destroy()
+  const handlers = new Map();
+
+  const makeClick = (dot) => () => go(dot.dataset.section);
+  const makeKeydown = (click) => (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      click();
+    }
+  };
 
   dots.forEach((dot) => {
     dot.setAttribute("role", "button");
     dot.setAttribute("tabindex", "0");
 
-    const click = onDotActivate(dot);
+    const click = makeClick(dot);
+    const keydown = makeKeydown(click);
+    handlers.set(dot, { click, keydown });
+
     dot.addEventListener("click", click);
-    dot.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        click();
-      }
-    });
+    dot.addEventListener("keydown", keydown);
   });
 
   let sectionObs = null;
@@ -76,6 +83,11 @@ export function initDotNav({ config = CONFIG.dotNav } = {}) {
     return {
       destroy() {
         window.removeEventListener("scroll", onScroll);
+        handlers.forEach((h, dot) => {
+          dot.removeEventListener("click", h.click);
+          dot.removeEventListener("keydown", h.keydown);
+        });
+        handlers.clear();
       },
     };
   }
@@ -84,6 +96,11 @@ export function initDotNav({ config = CONFIG.dotNav } = {}) {
     destroy() {
       sectionObs?.disconnect();
       heroObs?.disconnect();
+      handlers.forEach((h, dot) => {
+        dot.removeEventListener("click", h.click);
+        dot.removeEventListener("keydown", h.keydown);
+      });
+      handlers.clear();
     },
   };
 }
