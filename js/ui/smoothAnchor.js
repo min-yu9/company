@@ -3,11 +3,11 @@ import { on } from "../utils/dom.js";
 function getProductsBottomTargetTop(products) {
   const rect = products.getBoundingClientRect();
   // products 하단이 뷰포트 하단보다 살짝 아래로 가게(= 조건 만족) 여유를 줌
-  const targetTop = window.scrollY + (rect.bottom - window.innerHeight) + 140;
+  const targetTop = window.scrollY + (rect.bottom - window.innerHeight) + 40;
   return Math.max(0, targetTop);
 }
 
-function waitUntilAtBottom(products, cb, { threshold = 40, timeout = 2500 } = {}) {
+function waitUntilAtBottom(products, cb, { threshold = 100, timeout = 2500 } = {}) {
   const start = performance.now();
 
   const tick = () => {
@@ -30,6 +30,15 @@ function waitUntilAtBottom(products, cb, { threshold = 40, timeout = 2500 } = {}
   requestAnimationFrame(tick);
 }
 
+function setPeekNavActive(active, ms = 1600) {
+  if (active) {
+    window.__peekNav = { active: true, until: performance.now() + ms };
+  } else if (window.__peekNav) {
+    window.__peekNav.active = false;
+    window.__peekNav.until = 0;
+  }
+}
+
 export function initSmoothAnchors() {
   on(document, "click", (e) => {
     const a = e.target.closest('a[href^="#"]');
@@ -45,22 +54,26 @@ export function initSmoothAnchors() {
     e.preventDefault();
 
     // ✅ 문의: 스크롤이 끝까지 내려간 뒤(도달 감지) footer-peek를 자동으로 열기
+    // ✅ snapScroll의 IntersectionObserver가 "섹션이 바뀌는 도중" peek를 force close 하는 문제를 막기 위해
+    //    이 이동 동안에는 전역 플래그로 peek close를 suppress
     if (wantsFooter && href === "#products") {
       const products = target;
       const ctl = window.__footerPeek;
 
+      setPeekNavActive(true, 2200);
+
       // 내려가는 동안 close만 막아두기(깜빡임 방지)
       ctl?.setAutoSuppressed?.(true);
-      ctl?.closePeek?.();
 
       const y = getProductsBottomTargetTop(products);
       window.scrollTo({ top: y, behavior: "smooth" });
 
-      // ⭐ 핵심: 프로그램 스크롤은 마지막 구간에서 이벤트/스냅 로직 때문에 open이 안될 수 있어서,
-      // 실제로 "바닥 도달"을 rAF로 감지한 뒤 openPeek를 직접 호출
       waitUntilAtBottom(products, () => {
         ctl?.openPeek?.();
         ctl?.setAutoSuppressed?.(false);
+
+        // close suppress는 약간 더 유지했다가 해제(마지막 IO/scroll 이벤트 흡수)
+        setTimeout(() => setPeekNavActive(false), 260);
       });
 
       history.replaceState(null, "", href);

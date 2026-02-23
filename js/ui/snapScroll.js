@@ -1,5 +1,16 @@
 import { qsa, qs, isTouchLike, isSmallScreen, prefersReducedMotion } from "../utils/dom.js";
 
+function peekNavActive() {
+  const s = window.__peekNav;
+  if (!s || !s.active) return false;
+  // until이 지났으면 자동 해제
+  if (s.until && performance.now() > s.until) {
+    s.active = false;
+    return false;
+  }
+  return true;
+}
+
 export function initSnapScroll() {
   const sections = qsa("section");
   if (!sections.length) return;
@@ -69,6 +80,12 @@ export function initSnapScroll() {
   const closePeek = (opts) => footerPeek && footerPeek.closePeek && footerPeek.closePeek(opts);
   const peekIsOpen = () => footerPeek && footerPeek.isOpen && footerPeek.isOpen();
 
+  const safeClosePeek = (opts) => {
+    // ✅ "문의 → products" 프로그램 이동 중에는 peek를 강제로 닫지 않음(깜빡임/멈칫 방지)
+    if (peekNavActive()) return;
+    closePeek(opts);
+  };
+
   const onWheel = (e) => {
     if (isMenuOpen()) return;
 
@@ -99,7 +116,7 @@ export function initSnapScroll() {
 
       cancelOngoingScroll();
       scrollToIndex(currentIndex + dir, behavior);
-      if (currentIndex !== productsIndex) closePeek({ force: true });
+      if (currentIndex !== productsIndex) safeClosePeek({ force: true });
       lock(dir);
       return;
     }
@@ -130,7 +147,7 @@ export function initSnapScroll() {
     cancelOngoingScroll();
     scrollToIndex(currentIndex + dir, behavior);
     // 섹션 이동하면 peek 닫기(깔끔하게)
-    if (currentIndex !== productsIndex) closePeek({ force: true });
+    if (currentIndex !== productsIndex) safeClosePeek({ force: true });
     lock(dir);
   };
 
@@ -156,13 +173,11 @@ export function initSnapScroll() {
     if (locked) return;
 
     if (dir === 1 && currentIndex === sections.length - 1) {
-      // 마지막 섹션에서는 peek만 유지하고 더 아래로 이동하지 않음
       openPeek({ pin: false });
       lock(dir);
       return;
     }
 
-    // 위로 키 이동 중 peek가 열려있으면 먼저 닫기
     if (dir === -1 && peekIsOpen()) {
       closePeek({ force: true });
       lock(dir);
@@ -171,7 +186,7 @@ export function initSnapScroll() {
 
     cancelOngoingScroll();
     scrollToIndex(currentIndex + dir, behavior);
-    if (currentIndex !== productsIndex) closePeek({ force: true });
+    if (currentIndex !== productsIndex) safeClosePeek({ force: true });
     lock(dir);
   });
 
@@ -184,7 +199,7 @@ export function initSnapScroll() {
           const idx = sections.indexOf(entry.target);
           if (idx >= 0) {
             currentIndex = idx;
-            if (currentIndex !== productsIndex) closePeek({ force: true });
+            if (currentIndex !== productsIndex) safeClosePeek({ force: true });
           }
         });
       },
@@ -193,7 +208,6 @@ export function initSnapScroll() {
     sections.forEach((s) => obs.observe(s));
   }
 
-  // Re-evaluate on resize (switch between snap/non-snap)
   const onResize = () => {
     const nowTouch = isSmallScreen() || isTouchLike();
     if (nowTouch) body.classList.remove("is-snap");
