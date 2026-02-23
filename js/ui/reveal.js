@@ -1,17 +1,13 @@
 import { qsa, prefersReducedMotion } from "../utils/dom.js";
+import { CONFIG } from "../config.js";
 
-export function initReveal() {
+export function initReveal({ config = CONFIG.reveal } = {}) {
   const items = qsa(".reveal");
-  if (!items.length) return;
+  if (!items.length) return { destroy() {} };
 
-  if (prefersReducedMotion()) {
+  if (prefersReducedMotion() || !("IntersectionObserver" in window)) {
     items.forEach((el) => el.classList.add("show"));
-    return;
-  }
-
-  if (!("IntersectionObserver" in window)) {
-    items.forEach((el) => el.classList.add("show"));
-    return;
+    return { destroy() {} };
   }
 
   const obs = new IntersectionObserver(
@@ -20,8 +16,10 @@ export function initReveal() {
         if (entry.isIntersecting) entry.target.classList.add("show");
       });
     },
-    { threshold: 0.15 }
+    { threshold: config.threshold }
   );
 
   items.forEach((el) => obs.observe(el));
+
+  return { destroy() { obs.disconnect(); } };
 }

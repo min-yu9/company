@@ -1,25 +1,27 @@
 import { qs } from "../utils/dom.js";
+import { CONFIG } from "../config.js";
 
-export function initHeaderScroll() {
+export function initHeaderScroll({ config = CONFIG.header } = {}) {
   const header = qs("header");
   const hero = qs("#hero") || qs(".hero");
-  if (!header || !hero) return;
+  if (!header || !hero) return { destroy() {} };
 
   const set = (isHeroVisible) => {
-    if (isHeroVisible) header.classList.remove("scrolled");
-    else header.classList.add("scrolled");
+    header.classList.toggle("scrolled", !isHeroVisible);
   };
 
+  let obs = null;
   if ("IntersectionObserver" in window) {
-    const obs = new IntersectionObserver(
-      (entries) => set(entries[0].isIntersecting),
-      { threshold: 0.6 }
-    );
+    obs = new IntersectionObserver((entries) => set(entries[0].isIntersecting), {
+      threshold: config.threshold,
+    });
     obs.observe(hero);
   } else {
-    // fallback
-    const onScroll = () => set(window.scrollY < hero.offsetHeight * 0.6);
+    const onScroll = () => set(window.scrollY < hero.offsetHeight * config.threshold);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+    return { destroy() { window.removeEventListener("scroll", onScroll);} };
   }
+
+  return { destroy() { obs?.disconnect(); } };
 }

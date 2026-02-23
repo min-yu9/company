@@ -1,6 +1,7 @@
 import { qs } from "../utils/dom.js";
+import { CONFIG } from "../config.js";
 
-export function initFooterPeek() {
+export function initFooterPeek({ config = CONFIG.footerPeek } = {}) {
   const el = qs("#footerPeek");
   const products = qs("#products");
   if (!el || !products) return null;
@@ -36,26 +37,21 @@ export function initFooterPeek() {
     autoSuppressed = !!v;
   };
 
-  // ✅ 수정 포인트:
-  // - autoSuppressed(문의 클릭으로 프로그램 스크롤 중)일 때도 "열기"는 허용
-  // - 다만 닫기(close)는 막아서, 스크롤 도중 깜빡임/사라짐 방지
+  // autoSuppressed(문의 클릭으로 프로그램 스크롤 중)일 때도 "열기"는 허용
+  // 다만 닫기(close)는 막아서, 스크롤 도중 깜빡임/사라짐 방지
   const onScroll = () => {
     if (document.body.classList.contains("is-snap")) return;
 
     const rect = products.getBoundingClientRect();
     const bottomDist = rect.bottom - window.innerHeight;
 
-    // 바닥 근처면 즉시 열기
-    if (bottomDist < 10) {
+    if (bottomDist < config.openBottomDistPx) {
       openPeek();
-      // 한번 열렸으면 억제 해제해서 이후 자연스러운 자동 동작
       if (autoSuppressed) autoSuppressed = false;
       return;
     }
 
-    // 프로그램 스크롤 중에는 닫지 않음(깜빡임 방지)
     if (autoSuppressed) return;
-
     closePeek();
   };
 

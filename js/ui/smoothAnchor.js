@@ -1,25 +1,25 @@
 import { on } from "../utils/dom.js";
+import { CONFIG } from "../config.js";
 
-function getProductsBottomTargetTop(products) {
+function getProductsBottomTargetTop(products, extraPx) {
   const rect = products.getBoundingClientRect();
-  // products 하단이 뷰포트 하단보다 살짝 아래로 가게(= 조건 만족) 여유를 줌
-  const targetTop = window.scrollY + (rect.bottom - window.innerHeight) + 40;
+  const targetTop = window.scrollY + (rect.bottom - window.innerHeight) + extraPx;
   return Math.max(0, targetTop);
 }
 
-function waitUntilAtBottom(products, cb, { threshold = 100, timeout = 2500 } = {}) {
+function waitUntilAtBottom(products, cb, { thresholdPx, timeoutMs }) {
   const start = performance.now();
 
   const tick = () => {
     const rect = products.getBoundingClientRect();
     const bottomDist = rect.bottom - window.innerHeight;
 
-    if (bottomDist < threshold) {
+    if (bottomDist < thresholdPx) {
       cb(true);
       return;
     }
 
-    if (performance.now() - start > timeout) {
+    if (performance.now() - start > timeoutMs) {
       cb(false);
       return;
     }
@@ -30,17 +30,10 @@ function waitUntilAtBottom(products, cb, { threshold = 100, timeout = 2500 } = {
   requestAnimationFrame(tick);
 }
 
-function setPeekNavActive(active, ms = 1600) {
-  if (active) {
-    window.__peekNav = { active: true, until: performance.now() + ms };
-  } else if (window.__peekNav) {
-    window.__peekNav.active = false;
-    window.__peekNav.until = 0;
-  }
-}
+export function initSmoothAnchors({ footerPeek, appState, config = CONFIG.smoothAnchor } = {}) {
+  const setPeekNavActive = appState?.setPeekNavActive;
 
-export function initSmoothAnchors() {
-  on(document, "click", (e) => {
+  const onClick = (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
 
@@ -53,35 +46,46 @@ export function initSmoothAnchors() {
     const wantsFooter = a.hasAttribute("data-open-footer");
     e.preventDefault();
 
-    // ✅ 문의: 스크롤이 끝까지 내려간 뒤(도달 감지) footer-peek를 자동으로 열기
-    // ✅ snapScroll의 IntersectionObserver가 "섹션이 바뀌는 도중" peek를 force close 하는 문제를 막기 위해
-    //    이 이동 동안에는 전역 플래그로 peek close를 suppress
+    // 문의(data-open-footer) + products: 바닥 근처 도달 감지 후 footer-peek 열기
     if (wantsFooter && href === "#products") {
       const products = target;
-      const ctl = window.__footerPeek;
 
-      setPeekNavActive(true, 2200);
+      setPeekNavActive?.(true, config.peekNavActiveMs);
 
       // 내려가는 동안 close만 막아두기(깜빡임 방지)
-      ctl?.setAutoSuppressed?.(true);
+      footerPeek?.setAutoSuppressed?.(true);
 
-      const y = getProductsBottomTargetTop(products);
+      const y = getProductsBottomTargetTop(products, config.bottomTargetExtraPx);
       window.scrollTo({ top: y, behavior: "smooth" });
 
-      waitUntilAtBottom(products, () => {
-        ctl?.openPeek?.();
-        ctl?.setAutoSuppressed?.(false);
+      waitUntilAtBottom(
+        products,
+        () => {
+          footerPeek?.openPeek?.();
+          footerPeek?.setAutoSuppressed?.(false);
 
-        // close suppress는 약간 더 유지했다가 해제(마지막 IO/scroll 이벤트 흡수)
-        setTimeout(() => setPeekNavActive(false), 260);
-      });
+          // 마지막 IO/scroll 이벤트를 흡수한 뒤 해제
+          setTimeout(() => setPeekNavActive?.(false), config.suppressReleaseDelayMs);
+        },
+        {
+          thresholdPx: config.bottomThresholdPx,
+          timeoutMs: config.bottomTimeoutMs,
+        }
+      );
 
       history.replaceState(null, "", href);
       return;
     }
 
-    // 기본 앵커
     target.scrollIntoView({ behavior: "smooth" });
     history.replaceState(null, "", href);
-  });
+  };
+
+  on(document, "click", onClick);
+
+  return {
+    destroy() {
+      document.removeEventListener("click", onClick);
+    },
+  };
 }

@@ -1,12 +1,13 @@
-import { qs, qsa, on } from "../utils/dom.js";
+import { qs, qsa } from "../utils/dom.js";
+import { CONFIG } from "../config.js";
 
-export function initDotNav() {
+export function initDotNav({ config = CONFIG.dotNav } = {}) {
   const dotNav = qs(".dot-nav");
-  if (!dotNav) return;
+  if (!dotNav) return { destroy() {} };
 
   const dots = qsa("span", dotNav);
   const sections = qsa("section");
-  if (!dots.length || !sections.length) return;
+  if (!dots.length || !sections.length) return { destroy() {} };
 
   const hero = qs("#hero") || qs(".hero");
 
@@ -16,18 +17,32 @@ export function initDotNav() {
     if (targetDot) targetDot.classList.add("active");
   };
 
-  // 도트 클릭 이동
+  const go = (id) => {
+    const target = id ? document.getElementById(id) : null;
+    if (target) target.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const onDotActivate = (dot) => () => go(dot.dataset.section);
+
   dots.forEach((dot) => {
-    dot.addEventListener("click", () => {
-      const id = dot.dataset.section;
-      const target = id ? document.getElementById(id) : null;
-      if (target) target.scrollIntoView({ behavior: "smooth" });
+    dot.setAttribute("role", "button");
+    dot.setAttribute("tabindex", "0");
+
+    const click = onDotActivate(dot);
+    dot.addEventListener("click", click);
+    dot.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        click();
+      }
     });
   });
 
-  // 섹션 들어오면 도트 활성화
+  let sectionObs = null;
+  let heroObs = null;
+
   if ("IntersectionObserver" in window) {
-    const obs = new IntersectionObserver(
+    sectionObs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
@@ -35,33 +50,40 @@ export function initDotNav() {
           if (id) setActive(id);
         });
       },
-      { threshold: 0.6 }
+      { threshold: config.threshold }
     );
+    sections.forEach((s) => sectionObs.observe(s));
 
-    sections.forEach((s) => obs.observe(s));
-
-    // Hero에서는 dot-nav 숨김(기존 기능 유지)
     if (hero) {
-      const heroObs = new IntersectionObserver(
+      heroObs = new IntersectionObserver(
         (entries) => {
           const isHeroVisible = entries[0].isIntersecting;
           dotNav.style.opacity = isHeroVisible ? "0" : "1";
           dotNav.style.pointerEvents = isHeroVisible ? "none" : "auto";
         },
-        { threshold: 0.6 }
+        { threshold: config.threshold }
       );
       heroObs.observe(hero);
     }
-  } else {
-    // fallback: hero만 간단 처리
-    if (hero) {
-      const onScroll = () => {
-        const isHeroVisible = window.scrollY < hero.offsetHeight * 0.6;
-        dotNav.style.opacity = isHeroVisible ? "0" : "1";
-        dotNav.style.pointerEvents = isHeroVisible ? "none" : "auto";
-      };
-      window.addEventListener("scroll", onScroll, { passive: true });
-      onScroll();
-    }
+  } else if (hero) {
+    const onScroll = () => {
+      const isHeroVisible = window.scrollY < hero.offsetHeight * 0.6;
+      dotNav.style.opacity = isHeroVisible ? "0" : "1";
+      dotNav.style.pointerEvents = isHeroVisible ? "none" : "auto";
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return {
+      destroy() {
+        window.removeEventListener("scroll", onScroll);
+      },
+    };
   }
+
+  return {
+    destroy() {
+      sectionObs?.disconnect();
+      heroObs?.disconnect();
+    },
+  };
 }

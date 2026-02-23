@@ -12,3 +12,19 @@ export const isSmallScreen = () => window.matchMedia("(max-width: 768px)").match
 
 export const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// rAF throttle (scroll/resize 성능용)
+export function rafThrottle(fn) {
+  let scheduled = false;
+  let lastArgs = null;
+
+  return (...args) => {
+    lastArgs = args;
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      fn(...(lastArgs || []));
+    });
+  };
+}
