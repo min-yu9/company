@@ -37,3 +37,12 @@ header.scrolled ~ .dot-nav span {
 @media (max-width: 768px) {
   .dot-nav { display: none; }
 }
+
+
+
+/* Contact trigger section (override full-screen section rules) */
+#contact.contact-section{
+  min-height:220px !important;
+  height:auto !important;
+  padding:80px 0 !important;
+}

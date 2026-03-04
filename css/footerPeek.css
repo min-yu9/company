@@ -88,3 +88,12 @@
 body.footer-peek-open #products {
   transform: translateY(calc(-1 * var(--footer-peek-h, 0px)));
 }
+
+
+
+/* Contact trigger section (override full-screen section rules) */
+#contact.contact-section{
+  min-height:220px !important;
+  height:auto !important;
+  padding:80px 0 !important;
+}

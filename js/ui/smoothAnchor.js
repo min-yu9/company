@@ -47,35 +47,15 @@ export function initSmoothAnchors({ footerPeek, appState, config = CONFIG.smooth
     e.preventDefault();
 
     // 문의(data-open-footer) + products: 바닥 근처 도달 감지 후 footer-peek 열기
-    if (wantsFooter && href === "#products") {
-      const products = target;
-
-      setPeekNavActive?.(true, config.peekNavActiveMs);
-
-      // 내려가는 동안 close만 막아두기(깜빡임 방지)
-      footerPeek?.setAutoSuppressed?.(true);
-
-      const y = getProductsBottomTargetTop(products, config.bottomTargetExtraPx);
-      window.scrollTo({ top: y, behavior: "smooth" });
-
-      waitUntilAtBottom(
-        products,
-        () => {
-          footerPeek?.openPeek?.();
-          footerPeek?.setAutoSuppressed?.(false);
-
-          // 마지막 IO/scroll 이벤트를 흡수한 뒤 해제
-          setTimeout(() => setPeekNavActive?.(false), config.suppressReleaseDelayMs);
-        },
-        {
-          thresholdPx: config.bottomThresholdPx,
-          timeoutMs: config.bottomTimeoutMs,
-        }
-      );
-
+    
+    if (wantsFooter && href === "#contact") {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "end" });
+      footerPeek?.openPeek?.();
       history.replaceState(null, "", href);
       return;
     }
+
 
     target.scrollIntoView({ behavior: "smooth" });
     history.replaceState(null, "", href);

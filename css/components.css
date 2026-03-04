@@ -95,3 +95,12 @@
   height: 3px;
   background: linear-gradient(90deg, transparent, #2E6FBE, transparent);
 }
+
+
+
+/* Contact trigger section (override full-screen section rules) */
+#contact.contact-section{
+  min-height:220px !important;
+  height:auto !important;
+  padding:80px 0 !important;
+}

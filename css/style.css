@@ -7,3 +7,12 @@
 @import url("./dotnav.css");
 @import url("./footerPeek.css");
 @import url("./responsive.css");
+
+
+
+/* Contact trigger section (override full-screen section rules) */
+#contact.contact-section{
+  min-height:220px !important;
+  height:auto !important;
+  padding:80px 0 !important;
+}
