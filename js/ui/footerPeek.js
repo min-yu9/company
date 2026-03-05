@@ -1,10 +1,9 @@
-import { qs, rafThrottle } from "../utils/dom.js";
+import { qs } from "../utils/dom.js";
 import { CONFIG } from "../config.js";
 
 export function initFooterPeek({ config = CONFIG.footerPeek } = {}) {
   const el = qs("#footerPeek");
-  const products = qs("#products");
-  if (!el || !products) return null;
+  if (!el) return null;
 
   let open = false;
   let autoSuppressed = false;
@@ -36,37 +35,15 @@ export function initFooterPeek({ config = CONFIG.footerPeek } = {}) {
   const setAutoSuppressed = (v) => {
     autoSuppressed = !!v;
   };
-
-  // autoSuppressed(문의 클릭으로 프로그램 스크롤 중)일 때도 "열기"는 허용
-  // 다만 닫기(close)는 막아서, 스크롤 도중 깜빡임/사라짐 방지
-  const onScroll = () => {
-    if (document.body.classList.contains("is-snap")) return;
-
-    const rect = products.getBoundingClientRect();
-    const bottomDist = rect.bottom - window.innerHeight;
-
-    if (bottomDist < config.openBottomDistPx) {
-      openPeek();
-      if (autoSuppressed) autoSuppressed = false;
-      return;
-    }
-
-    if (autoSuppressed) return;
-    closePeek();
-  };
-
-  const onScrollRaf = rafThrottle(onScroll);
+  // NOTE: auto-open/close based on scroll position is disabled.
 
   const onResize = () => {
     if (open) setPeekHeightVar();
-    onScrollRaf();
   };
 
-  window.addEventListener("scroll", onScrollRaf, { passive: true });
   window.addEventListener("resize", onResize, { passive: true });
 
   closePeek();
-  onScroll();
 
   return {
     openPeek,
@@ -74,7 +51,6 @@ export function initFooterPeek({ config = CONFIG.footerPeek } = {}) {
     isOpen,
     setAutoSuppressed,
     destroy() {
-      window.removeEventListener("scroll", onScrollRaf);
       window.removeEventListener("resize", onResize);
     },
   };

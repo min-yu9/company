@@ -34,8 +34,18 @@ export function initSmoothAnchors({ footerPeek, appState, config = CONFIG.smooth
   const setPeekNavActive = appState?.setPeekNavActive;
 
   const onClick = (e) => {
-    const a = e.target.closest('a[href^="#"]');
+    const a = e.target.closest('a[data-open-footer], a[href^="#"]');
     if (!a) return;
+
+    const wantsFooter = a.hasAttribute("data-open-footer");
+    if (wantsFooter) {
+      e.preventDefault();
+      setPeekNavActive?.(true, config.peekNavActiveMs);
+      // 스크롤 위치에 의존하지 않고 클릭으로 바로 peek를 연다.
+      footerPeek?.openPeek?.();
+      setTimeout(() => setPeekNavActive?.(false), config.suppressReleaseDelayMs);
+      return;
+    }
 
     const href = a.getAttribute("href");
     if (!href || href === "#") return;
@@ -43,20 +53,7 @@ export function initSmoothAnchors({ footerPeek, appState, config = CONFIG.smooth
     const target = document.querySelector(href);
     if (!target) return;
 
-    const wantsFooter = a.hasAttribute("data-open-footer");
     e.preventDefault();
-
-    // 문의(data-open-footer) + products: 바닥 근처 도달 감지 후 footer-peek 열기
-    
-    if (wantsFooter && href === "#contact") {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: "smooth", block: "end" });
-      footerPeek?.openPeek?.();
-      history.replaceState(null, "", href);
-      return;
-    }
-
-
     target.scrollIntoView({ behavior: "smooth" });
     history.replaceState(null, "", href);
   };

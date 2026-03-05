@@ -86,26 +86,13 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
         return;
       }
 
-      if (dir === 1 && productsIndex >= 0 && currentIndex === productsIndex && !peekIsOpen()) {
-        openPeek();
-        lock(dir);
-        return;
-      }
-
       cancelOngoingScroll();
       scrollToIndex(currentIndex + dir, behavior);
-      if (currentIndex !== productsIndex) safeClosePeek();
       lock(dir);
       return;
     }
 
     if (locked) return;
-
-    if (dir === 1 && productsIndex >= 0 && currentIndex === productsIndex && !peekIsOpen()) {
-      openPeek();
-      lock(dir);
-      return;
-    }
 
     if (dir === -1 && peekIsOpen()) {
       closePeek();
@@ -121,8 +108,6 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
 
     cancelOngoingScroll();
     scrollToIndex(currentIndex + dir, behavior);
-
-    if (currentIndex !== productsIndex) safeClosePeek();
     lock(dir);
   };
 
@@ -181,7 +166,6 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
 
     cancelOngoingScroll();
     scrollToIndex(currentIndex + dir, behavior);
-    if (currentIndex !== productsIndex) safeClosePeek();
     lock(dir);
   };
   // listeners are bound via bind()
@@ -196,7 +180,6 @@ export function initSnapScroll({ footerPeek, appState, config = CONFIG.snapScrol
           const idx = sections.indexOf(entry.target);
           if (idx >= 0) {
             currentIndex = idx;
-            if (currentIndex !== productsIndex) safeClosePeek();
           }
         });
       },
